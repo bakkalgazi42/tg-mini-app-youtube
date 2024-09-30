@@ -12,7 +12,7 @@ import { client } from "../client";
 import { inAppWallet, createWallet } from "thirdweb/wallets";
 import { shortenAddress } from "thirdweb/utils";
 import { getContract } from "thirdweb";
-import { bakkalgazi } from "thirdweb/chains"; // Bakkalgazi ağı burada kullanılıyor
+import { baseSepolia } from "thirdweb/chains";
 import { claimTo, getBalance } from "thirdweb/extensions/erc20";
 
 type Choice = 'Rock' | 'Paper' | 'Scissors';
@@ -44,11 +44,11 @@ export default function RockPaperScissors() {
   const account = useActiveAccount();
   const { disconnect } = useDisconnect();
   const wallet = useActiveWallet();
-  const { connect } = useConnect();
+  const { connect } = useConnect(); // Cüzdan bağlantısı için kullanılıyor.
 
   const contract = getContract({
     client: client,
-    chain: bakkalgazi, // Bakkalgazi ağı burada kullanılıyor
+    chain: baseSepolia,
     address: "0x4ad1AD500e76bEAb7e332cD8692E8BFF0862CdC9" // Token kontrat adresi
   });
 
@@ -113,7 +113,7 @@ export default function RockPaperScissors() {
             <ConnectButton
               client={client}
               accountAbstraction={{
-                chain: bakkalgazi,
+                chain: baseSepolia,
                 sponsorGas: true
               }}
               wallets={[
@@ -132,7 +132,8 @@ export default function RockPaperScissors() {
                   const wallet = createWallet("io.metamask");
                   await wallet.connect({ client });
                   return wallet;
-                })}
+                })
+              }
               style={{
                 padding: '0.5rem 1rem',
                 background: '#007bff',
