@@ -4,7 +4,6 @@ import { client } from "../client";
 import { inAppWallet } from "thirdweb/wallets";
 import { shortenAddress } from "thirdweb/utils";
 import { getContract } from "thirdweb";
-import { baseSepolia } from "thirdweb/chains";
 import { claimTo, getBalance } from "thirdweb/extensions/erc20";
 
 type Choice = 'Rock' | 'Paper' | 'Scissors';
@@ -34,13 +33,25 @@ interface GameResult {
 
 export default function RockPaperScissors() {
     const account = useActiveAccount();
-    const {disconnect} = useDisconnect();
+    const { disconnect } = useDisconnect();
     const wallet = useActiveWallet();
+
+    // Custom chain configuration for bakkalgazi
+    const bakkalgaziChain = {
+        id: 10120, // Chain ID
+        rpcUrl: "https://dymrollapp-evm.bakkaligazi.trade", // RPC URL
+        name: "Bakkalgazi",
+        nativeCurrency: {
+            name: "Bakkalgazi Token",
+            symbol: "BGZ",
+            decimals: 18
+        }
+    };
 
     const contract = getContract({
         client: client,
-        chain: baseSepolia,
-        address: "<YOUR_TOKEN_CONTRACT_ADDRESS>"
+        chain: bakkalgaziChain,  // Use the custom chain here
+        address: "0x4ad1AD500e76bEAb7e332cD8692E8BFF0862CdC9"  // Token contract address
     });
 
     const [result, setResult] = useState<GameResult | null>(null);
@@ -71,7 +82,7 @@ export default function RockPaperScissors() {
             contract: contract,
             address: account?.address!
         }
-    )
+    );
 
     return (
         <div style={{
@@ -103,13 +114,13 @@ export default function RockPaperScissors() {
                     <ConnectButton
                         client={client}
                         accountAbstraction={{
-                            chain: baseSepolia,
+                            chain: bakkalgaziChain,  // Custom chain for connection
                             sponsorGas: true
                         }}
                         wallets={[
                             inAppWallet({
                                 auth: {
-                                    options:[
+                                    options: [
                                         "email"
                                     ]
                                 }
@@ -248,39 +259,4 @@ export default function RockPaperScissors() {
                                                 borderRadius: '8px',
                                                 maxWidth: '300px',
                                                 textAlign: 'center'
-                                            }}>
-                                                <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Claim 10 Tokens!</h2>
-                                                <p style={{ marginBottom: '1rem' }}>You won and can claim 10 tokens to your wallet.</p>
-
-                                                <TransactionButton
-                                                    transaction={() => claimTo({
-                                                        contract: contract,
-                                                        to: account.address,
-                                                        quantity: "10"
-                                                    })}
-                                                    onTransactionConfirmed={() => {
-                                                        alert('Prize claimed!')
-                                                        setShowModal(false)
-                                                        setPrizeClaimed(true)
-                                                    }}
-                                                    style={{
-                                                        padding: '0.5rem 1rem',
-                                                        background: '#28a745',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer'
-                                                    }}
-                                                >Claim Prize</TransactionButton>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </>
-                )}
-            </div>
-        </div>
-    )
-}
+                                           
